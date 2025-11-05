@@ -19,12 +19,28 @@ document.addEventListener("DOMContentLoaded", () => {
         activityCard.className = "activity-card";
 
         const spotsLeft = details.max_participants - details.participants.length;
+        // Build participants HTML (bulleted list). Show friendly text when empty.
+        const participants = details.participants || [];
+        let participantsHtml = `<div class="participants"><strong>Participants</strong>`;
+        if (participants.length) {
+          participantsHtml += '<ul class="participants-list">';
+          participants.forEach((p) => {
+            // simple escape for '<' to avoid accidental markup (emails/names shouldn't contain HTML)
+            const safe = String(p).replace(/</g, "&lt;");
+            participantsHtml += `<li>${safe}</li>`;
+          });
+          participantsHtml += '</ul>';
+        } else {
+          participantsHtml += '<p class="no-participants">No participants yet</p>';
+        }
+        participantsHtml += '</div>';
 
         activityCard.innerHTML = `
           <h4>${name}</h4>
           <p>${details.description}</p>
           <p><strong>Schedule:</strong> ${details.schedule}</p>
           <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
+          ${participantsHtml}
         `;
 
         activitiesList.appendChild(activityCard);
